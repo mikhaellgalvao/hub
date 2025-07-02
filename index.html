@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galvão Drones - Hub Central</title>
+    <title>Hub Central - Mikhaell Galvão</title>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
-        /* --- GERAL E TEMAS --- */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
 
         :root {
             --fundo-dark: #121212;
             --texto-claro: #f1f1f1;
             --card-dark: #1e1e1e;
-            
-            /* Cores Estáticas */
             --cor-sucesso: #2ecc71;
             --cor-erro: #e74c3c;
             --whatsapp-green: #25D366;
-
+            
             /* Cores Dinâmicas do Tema */
             --cor-primaria: #EF7E13; /* Laranja GD */
             --cor-secundaria: #0E5847; /* Verde GD */
@@ -66,10 +63,12 @@
         .hub-container { background-color: var(--card-dark); padding: 20px; border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.7); }
         
         /* --- SELETOR DE PERFIL --- */
-        .profile-switcher { display: flex; background-color: #2c2c2c; border-radius: 12px; padding: 5px; margin-bottom: 30px; position: relative; }
+        .profile-switcher { display: flex; align-items: center; background-color: #2c2c2c; border-radius: 12px; padding: 5px; margin-bottom: 30px; }
+        .profile-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--cor-secundaria); color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1rem; margin-right: 10px; transition: background-color 0.4s; }
+        .switcher-buttons { flex: 1; display: flex; position: relative; }
         .profile-switcher-button { flex: 1; padding: 15px 10px; border: none; background: none; color: var(--texto-claro); font-size: 1rem; font-weight: bold; cursor: pointer; z-index: 2; transition: color 0.4s ease; }
         .profile-switcher-button.active { color: white; }
-        #switcher-glider { position: absolute; height: calc(100% - 10px); width: calc(50% - 5px); background-color: var(--cor-primaria); border-radius: 8px; top: 5px; left: 5px; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s; }
+        #switcher-glider { position: absolute; height: 100%; width: 50%; background-color: var(--cor-primaria); border-radius: 8px; top: 0; left: 0; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s; }
         
         /* Oculta/Mostra seções com base no perfil ativo */
         body:not(.personal-mode) #pessoal { display: none; }
@@ -77,16 +76,28 @@
         
         h2 { color: var(--cor-primaria); border-left: 4px solid var(--cor-primaria); padding-left: 10px; margin-top: 40px; margin-bottom: 20px; transition: color 0.4s, border-color 0.4s; }
 
-        /* --- HUB DE PROJETOS --- */
-        .project-list { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 0; list-style: none; }
-        @media (min-width: 600px) { .project-list { grid-template-columns: repeat(2, 1fr); } }
-        .project-item { background-color: var(--cor-secundaria); border-radius: 12px; transition: all 0.3s; position: relative; overflow: hidden; }
-        .project-item:hover { transform: scale(1.03); box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
-        .project-item a { display: flex; align-items: center; justify-content: center; color: var(--texto-claro); padding: 25px 20px; text-decoration: none; font-weight: bold; font-size: 1.1rem; }
-        .project-item a svg { margin-right: 12px; width: 22px; height: 22px; fill: white; }
-        .progress-bar { background-color: rgba(0,0,0,0.3); height: 5px; width: 100%; position: absolute; bottom: 0; }
-        .progress { background-color: var(--cor-sucesso); height: 100%; }
-        .badge { position: absolute; top: 12px; right: 12px; background-color: var(--cor-sucesso); color: white; font-size: 12px; padding: 3px 8px; border-radius: 6px; font-weight: bold; }
+        /* --- HUB DE PROJETOS (GLASSMORPHISM) --- */
+        .project-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; padding: 0; list-style: none; }
+        .project-item a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border-radius: 16px;
+            aspect-ratio: 1 / 1;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .project-item a:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .project-item a svg { width: 40%; height: 40%; fill: var(--texto-claro); }
         
         /* --- SEÇÃO PESSOAL E DESTAQUE ASAF --- */
         .asaf-story-card { background: linear-gradient(135deg, var(--cor-primaria), var(--cor-secundaria)); border-radius: 12px; padding: 25px; text-align: center; color: white; margin-bottom: 15px; }
@@ -115,27 +126,23 @@
 </head>
 <body class="professional-mode">
 
-    <!-- TELA DE LOGIN -->
     <div id="password-container">
-        <img src="https://i.ibb.co/7bB2Vqg/dronelogo-gd.png" alt="[Imagem do Logo da Galvão Drones]">
         <h1>Acesso Restrito</h1>
-        <input type="password" id="password-input" placeholder="Digite a senha de acesso">
-        <div id="error-message">Senha incorreta.</div>
+        <input type="password" id="password-input" placeholder="Senha">
         <button id="password-button">Entrar</button>
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL (OCULTO) -->
     <div id="main-content">
         <div class="hub-container">
-            
-            <!-- SELETOR DE PERFIL -->
             <div class="profile-switcher">
-                <div id="switcher-glider"></div>
-                <button class="profile-switcher-button active" data-mode="professional">Profissional</button>
-                <button class="profile-switcher-button" data-mode="personal">Pessoal</button>
+                <div class="profile-avatar">MG</div>
+                <div class="switcher-buttons">
+                    <div id="switcher-glider"></div>
+                    <button class="profile-switcher-button active" data-mode="professional">Profissional</button>
+                    <button class="profile-switcher-button" data-mode="personal">Pessoal</button>
+                </div>
             </div>
 
-            <!-- SEÇÃO PESSOAL -->
             <section id="pessoal">
                 <h2>Pessoal</h2>
                 <div class="asaf-story-card">
@@ -143,47 +150,24 @@
                     <p>"A Aventura da Estrela que Queria Brilhar Mais Forte"</p>
                     <a href="https://mikhaellgalvao.github.io/historiaasaf/" target="_blank">Ver todas as histórias</a>
                 </div>
-                <div class="contact-info">
-                    <ul>
-                        <li><strong>Nome:</strong> Mikhaell Galvão</li>
-                        <li><strong>Instagram:</strong> <a href="https://www.instagram.com/Mikhaell_Galvao" target="_blank">@Mikhaell_Galvao</a></li>
-                        <li><strong>WhatsApp:</strong> <a href="https://wa.me/5562984710639" target="_blank">(62) 9 8471-0639</a></li>
-                    </ul>
-                </div>
                 <a href="#" class="share-button" id="personal-share-button">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="white"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 439.6c-38.2 0-73.7-11.8-103.6-32.5l-7.6-4.5-77.1 20.3 20.7-75.4-4.9-7.9c-21.6-35.1-33.1-75.3-33.1-116.3C42.1 143.8 124.8 61 223.9 61c47.1 0 91.2 18.5 124.4 51.7 33.2 33.2 51.7 77.3 51.7 124.4-.1 99-81.2 179.5-180.1 179.5zM319.4 309.4c-4.4-2.2-26.2-13-30.2-14.5-4-1.5-7-2.2-9.9 2.2-2.9 4.4-11.4 14.5-14 17.4-2.6 3-5.2 3.3-9.7 1.1-19.1-9.5-35.7-17.8-50.4-32.6-11.9-11.9-20.5-26.6-28.9-42.5-3.1-5.9-6.2-12.4-9.3-18.9-3.1-6.5-1.5-10 .8-13.5 2.1-3.1 4.7-5.9 7.1-8.8 2.3-2.9 3.1-4.9 4.6-8.2 1.5-3.3.8-6.1-.4-8.2-1.1-2.2-9.9-23.8-13.5-32.5-3.6-8.7-7.3-7.5-10-7.6-2.6-.1-5.6-.1-8.5-.1-2.9 0-7.6.4-11.4 4.4-3.9 4-14.9 14.5-14.9 35.3 0 20.8 15.3 40.9 17.4 43.9 2.1 3 29.9 45.7 72.5 63.9 10.5 4.5 18.7 7.2 25.2 9.2 10.7 3.3 20.4 2.9 27.9 1.8 8-1.2 26.2-10.7 29.9-21.1 3.7-10.4 3.7-19.3 2.6-21.1-1.1-1.8-4.1-3-8.5-5.2z"/></svg>
-                    Compartilhar Contato Pessoal
+                    Compartilhar Contato
                 </a>
             </section>
 
-            <!-- SEÇÃO COMERCIAL -->
             <section id="comercial">
                 <h2>Galvão Drones</h2>
                 <div class="project-list">
-                    <div class="project-item">
-                        <a href="https://www.galvaodrones.com.br" target="_blank">Site Oficial</a>
-                        <div class="badge">🏆</div>
-                    </div>
-                    <div class="project-item">
-                        <a href="https://mikhaellgalvao.github.io/sisgalvao/" target="_blank">Portal Interno</a>
-                    </div>
-                    <div class="project-item">
-                        <a href="#" target="_blank">Curso de Mapeamento</a>
-                        <div class="progress-bar"><div class="progress" style="width: 75%;"></div></div>
-                    </div>
-                    <div class="project-item"><a href="https://www.instagram.com/galvao_drones" target="_blank">Instagram</a></div>
-                    <div class="project-item"><a href="https://www.google.com/maps/search/?api=1&query=Galvão+Drones+Goiânia" target="_blank">Rotas para a Empresa</a></div>
-                    <div class="project-item"><a href="#" target="_blank">Templates de Contratos</a></div>
+                    <div class="project-item"><a href="https://www.galvaodrones.com.br" title="Site Oficial" target="_blank"><svg viewBox="0 0 512 512"><path d="M352 256c0 22.2-1.2 43.6-3.3 64H163.3c-2.1-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64H348.7c2.1 20.4 3.3 41.8 3.3 64zM512 256c0 141.4-114.6 256-256 256S0 397.4 0 256S114.6 0 256 0S512 114.6 512 256zM112 320h288c-10.2 55.2-32.5 103.2-63.1 139.5c-30.6-36.3-52.9-84.3-63.1-139.5H112zM176.1 192H335.9c-10.2-55.2-32.5-103.2-63.1-139.5c-30.6 36.3-52.9 84.3-63.1 139.5z"/></svg></a></div>
+                    <div class="project-item"><a href="https://mikhaellgalvao.github.io/sisgalvao/" title="Portal Interno" target="_blank"><svg viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L256 480 136 330.7C110.9 296.3 96 253.9 96 208C96 93.1 189.1 0 304 0s208 93.1 208 208zM304 128c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48zM80 416c-20.5 0-38.3-11.5-46.4-29.2L1.2 312.2c-2.6-5.7-1.1-12.4 3.8-16.4l17.6-14.5c4.8-4 11.6-4.6 17-1.4l27.3 16.4c5.3 3.2 12 1.4 15.5-3.5l4.8-6.9c3.5-5-1.1-11.6-7-13.8L35.5 165c-5.9-2.2-9.5-8.2-9.5-14.5V128c0-13.3 10.7-24 24-24s24 10.7 24 24v19.3l27.2 10.1c5.9 2.2 12.3-1.1 14.5-7L124.8 128c2.2-5.9-1.1-12.3-7-14.5L90.7 103.2c-5.9-2.2-8.2-8.6-6.3-14.3l11-33.1c1.9-5.7 7.7-9.4 13.7-8.6l33.1 4.7c5.9 .8 11.1-2.9 12.8-8.6l10.8-36.9c1.7-5.8 7.3-9.8 13.4-9.8s11.7 4 13.4 9.8l10.8 36.9c1.7 5.7 6.9 9.4 12.8 8.6l33.1-4.7c6-.8 11.8 2.9 13.7 8.6l11 33.1c1.9 5.7-.4 12.1-6.3 14.3L224 113.7c-5.9 2.2-9.2 8.6-7 14.5l9.1 24.5c2.2 5.9 8.6 9.2 14.5 7l24.5-9.1c5.9-2.2 12.1 .4 14.3 6.3l11.6 31.1c2.2 5.9-.9 12.4-6.8 14.6l-28.1 10.5c-5.9 2.2-9.8 8.1-9.8 14.3V224c0 13.3 10.7 24 24 24s24-10.7 24-24v-3.5l28.1-10.5c5.9-2.2 12.3 1.1 14.5 7l11.6 31.1c2.2 5.9-.9 12.4-6.8 14.6l-28.1 10.5c-5.9 2.2-9.8 8.1-9.8 14.3v23.4c0 13.3 10.7 24 24 24s24-10.7 24-24V304l28.1-10.5c5.9-2.2 12.3 1.1 14.5 7l11.6 31.1c2.2 5.9-.9 12.4-6.8 14.6l-28.1 10.5c-5.9 2.2-9.8 8.1-9.8 14.3v19.9c0 12.4-7.2 23.2-18.1 27.6L86.4 414.8C84.4 415.5 82.2 416 80 416z"/></svg></a></div>
+                    <div class="project-item"><a href="https://www.instagram.com/galvao_drones" title="Instagram" target="_blank"><svg viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg></a></div>
+                    <div class="project-item"><a href="https://www.google.com/maps/search/?api=1&query=Galvão+Drones+Goiânia" title="Rotas para a Empresa" target="_blank"><svg viewBox="0 0 384 512"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg></a></div>
                 </div>
-                <a href="#" class="share-button" id="gd-share-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="white"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 439.6c-38.2 0-73.7-11.8-103.6-32.5l-7.6-4.5-77.1 20.3 20.7-75.4-4.9-7.9c-21.6-35.1-33.1-75.3-33.1-116.3C42.1 143.8 124.8 61 223.9 61c47.1 0 91.2 18.5 124.4 51.7 33.2 33.2 51.7 77.3 51.7 124.4-.1 99-81.2 179.5-180.1 179.5zM319.4 309.4c-4.4-2.2-26.2-13-30.2-14.5-4-1.5-7-2.2-9.9 2.2-2.9 4.4-11.4 14.5-14 17.4-2.6 3-5.2 3.3-9.7 1.1-19.1-9.5-35.7-17.8-50.4-32.6-11.9-11.9-20.5-26.6-28.9-42.5-3.1-5.9-6.2-12.4-9.3-18.9-3.1-6.5-1.5-10 .8-13.5 2.1-3.1 4.7-5.9 7.1-8.8 2.3-2.9 3.1-4.9 4.6-8.2 1.5-3.3.8-6.1-.4-8.2-1.1-2.2-9.9-23.8-13.5-32.5-3.6-8.7-7.3-7.5-10-7.6-2.6-.1-5.6-.1-8.5-.1-2.9 0-7.6.4-11.4 4.4-3.9 4-14.9 14.5-14.9 35.3 0 20.8 15.3 40.9 17.4 43.9 2.1 3 29.9 45.7 72.5 63.9 10.5 4.5 18.7 7.2 25.2 9.2 10.7 3.3 20.4 2.9 27.9 1.8 8-1.2 26.2-10.7 29.9-21.1 3.7-10.4 3.7-19.3 2.6-21.1-1.1-1.8-4.1-3-8.5-5.2z"/></svg>
-                    Compartilhar Contato Comercial
-                </a>
             </section>
             
             <hr>
             
-            <!-- SEÇÃO DE FERRAMENTAS -->
             <section id="tools">
                 <h2>Canivete Suíço</h2>
                 <div class="tools-grid">
@@ -204,12 +188,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- LÓGICA DE ACESSO ---
+            const body = document.body;
             const passwordContainer = document.getElementById('password-container');
             const mainContent = document.getElementById('main-content');
             const passwordInput = document.getElementById('password-input');
             const passwordButton = document.getElementById('password-button');
-            const errorMessage = document.getElementById('error-message');
             const correctPassword = 'mk0639'; 
 
             function attemptLogin() {
@@ -217,19 +200,16 @@
                     passwordContainer.style.display = 'none';
                     mainContent.style.display = 'block';
                 } else {
-                    errorMessage.style.visibility = 'visible';
+                    passwordContainer.classList.add('error');
+                    setTimeout(() => passwordContainer.classList.remove('error'), 500);
                     passwordInput.value = '';
-                    passwordInput.focus();
-                    setTimeout(() => { errorMessage.style.visibility = 'hidden'; }, 3000);
                 }
             }
             passwordButton.addEventListener('click', attemptLogin);
             passwordInput.addEventListener('keyup', (event) => { if (event.key === 'Enter') attemptLogin(); });
 
-            // --- LÓGICA DO SELETOR DE PERFIL ---
             const switcherButtons = document.querySelectorAll('.profile-switcher-button');
             const glider = document.getElementById('switcher-glider');
-            const body = document.body;
 
             switcherButtons.forEach(button => {
                 button.addEventListener('click', function() {
@@ -247,7 +227,6 @@
                 });
             });
 
-            // --- LÓGICA DAS FERRAMENTAS ---
             const qrButton = document.getElementById('qr-button');
             const qrInput = document.getElementById('qr-input');
             const qrcodeContainer = document.getElementById('qrcode-container');
@@ -257,13 +236,6 @@
             const quickNotes = document.getElementById('quick-notes');
             quickNotes.value = localStorage.getItem('quickNotes') || '';
             quickNotes.addEventListener('keyup', () => localStorage.setItem('quickNotes', quickNotes.value));
-
-            // --- LÓGICA DOS BOTÕES DE COMPARTILHAMENTO ---
-            document.getElementById('gd-share-button').addEventListener('click', (e) => {
-                e.preventDefault();
-                const msg = `Olá! Estou compartilhando o contato da Galvão Drones, especialista em soluções com drones em Goiânia.\n\n*Site:* www.galvaodrones.com.br\n*Instagram:* @galvao_drones\n*WhatsApp:* (62) 3636-0668\n\nFale com o Mikhaell para consultoria, vendas, manutenção e treinamentos!`;
-                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
-            });
 
             document.getElementById('personal-share-button').addEventListener('click', (e) => {
                 e.preventDefault();
