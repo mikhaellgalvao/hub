@@ -3,22 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interface de Mapa Interativa</title>
+    <title>Interface de Mapa Interativa (Corrigida)</title>
+    
+    <!-- Dependência Externa: Tailwind CSS para estilização. Requer conexão com a internet. -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Dependência Externa: Fonte Inter do Google Fonts. Requer conexão com a internet. -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* Estilo base para garantir que a fonte seja aplicada */
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Estilo para o mapa de fundo */
+        /* Imagem de fundo para simular o mapa. Não é essencial para a funcionalidade dos botões. */
         .map-background {
-            background-image: url('https://placehold.co/1200x800/e2e8f0/64748b?text=Mapa+Simulado');
+            background-image: url('https://placehold.co/1200x800/e2e8f0/64748b?text=Visualizacao+do+Mapa');
             background-size: cover;
             background-position: center;
         }
-        /* Animação para a notificação */
+        /* Animação para a notificação (toast) */
         @keyframes fadeInOut {
             0%, 100% { opacity: 0; transform: translateY(20px); }
             10%, 90% { opacity: 1; transform: translateY(0); }
@@ -34,82 +40,87 @@
         <!-- Fundo do Mapa -->
         <div class="absolute inset-0 map-background"></div>
 
-        <!-- Título da Interface (Opcional) -->
-        <div class="absolute top-4 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur-sm p-3 rounded-xl shadow-lg">
-            <h1 class="text-xl font-bold text-gray-800">Painel de Controle do Mapa</h1>
+        <!-- Título da Interface -->
+        <div class="absolute top-4 left-1/2 -translate-x-1/2 bg-white bg-opacity-90 p-3 rounded-xl shadow-lg">
+            <h1 class="text-xl font-bold text-gray-800">Painel de Controle</h1>
         </div>
 
-        <!-- Controles do Mapa -->
-        <div class="absolute bottom-5 right-5 flex flex-col items-center gap-3">
+        <!-- Controles do Mapa: Posicionados no canto inferior direito -->
+        <div class="absolute bottom-5 right-5 flex flex-col items-center gap-4">
             
-            <!-- Botões de Zoom -->
-            <div class="bg-white/80 backdrop-blur-sm shadow-xl rounded-xl p-2 flex flex-col gap-1">
-                <button id="zoom-in-btn" title="Aproximar" class="w-12 h-12 flex items-center justify-center text-gray-700 hover:bg-gray-200 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
+            <!-- Grupo de Botões de Zoom -->
+            <div class="bg-white shadow-xl rounded-xl p-2 flex flex-col gap-1 border border-gray-200">
+                <button id="zoom-in-btn" title="Aproximar" class="w-12 h-12 flex items-center justify-center text-gray-700 hover:bg-gray-200 active:bg-gray-300 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 </button>
-                <button id="zoom-out-btn" title="Afastar" class="w-12 h-12 flex items-center justify-center text-gray-700 hover:bg-gray-200 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                <button id="zoom-out-btn" title="Afastar" class="w-12 h-12 flex items-center justify-center text-gray-700 hover:bg-gray-200 active:bg-gray-300 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 </button>
             </div>
 
-            <!-- Botões de Navegação (Globo e Pin) -->
-            <div class="bg-white/80 backdrop-blur-sm shadow-xl rounded-xl p-2 flex flex-col gap-1">
-                <!-- Ícone de Globo -->
-                <button id="global-view-btn" title="Visão Global" class="w-12 h-12 flex items-center justify-center text-gray-700 hover:bg-gray-200 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
+            <!-- Grupo de Botões de Navegação (Globo e Pin) -->
+            <div class="bg-white shadow-xl rounded-xl p-2 flex flex-col gap-1 border border-gray-200">
+                <!-- Botão Ícone de Globo -->
+                <button id="global-view-btn" title="Visão Global" class="w-12 h-12 flex items-center justify-center text-gray-700 hover:bg-gray-200 active:bg-gray-300 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                 </button>
                 
-                <!-- Ícone de PIN de Localização -->
-                <button id="my-location-btn" title="Minha Localização" class="w-12 h-12 flex items-center justify-center text-orange-500 hover:bg-orange-100 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                <!-- Botão Ícone de PIN de Localização -->
+                <button id="my-location-btn" title="Minha Localização" class="w-12 h-12 flex items-center justify-center text-white bg-orange-500 hover:bg-orange-600 active:bg-orange-700 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                 </button>
             </div>
         </div>
         
-        <!-- Container para Notificações -->
-        <div id="toast-container" class="fixed bottom-5 left-1/2 -translate-x-1/2 w-full max-w-sm z-50"></div>
+        <!-- Container para Notificações (Toasts) -->
+        <div id="toast-container" class="fixed bottom-5 left-1/2 -translate-x-1/2 w-full max-w-sm z-50 pointer-events-none"></div>
 
     </div>
 
     <script>
-        // Função para mostrar notificação (toast)
+        // --- Início do Script ---
+
+        // Função para exibir uma notificação temporária (toast)
         function showToast(message) {
             const container = document.getElementById('toast-container');
             
-            // Remove qualquer notificação antiga
-            if (container.firstChild) {
-                container.removeChild(container.firstChild);
-            }
-
+            // Cria o elemento da notificação
             const toast = document.createElement('div');
-            toast.className = 'toast-notification bg-gray-800 text-white text-center py-3 px-6 rounded-lg shadow-xl';
+            toast.className = 'toast-notification bg-gray-800 text-white text-center py-3 px-6 rounded-lg shadow-xl mb-2';
             toast.textContent = message;
             
+            // Adiciona a notificação ao container
             container.appendChild(toast);
 
-            // A animação CSS cuida do desaparecimento
+            // A animação CSS cuida do aparecimento e desaparecimento.
+            // O elemento é removido do DOM após a animação para não acumular.
+            setTimeout(() => {
+                toast.remove();
+            }, 4000); // Duração da animação é 4s
         }
 
-        // Adicionando eventos aos botões
+        // Adiciona os "escutadores" de eventos aos botões
         document.getElementById('zoom-in-btn').addEventListener('click', () => {
-            showToast('Ação: Aproximar Zoom');
+            showToast('Ação: Aproximar');
             console.log('Botão de Zoom In clicado');
         });
 
         document.getElementById('zoom-out-btn').addEventListener('click', () => {
-            showToast('Ação: Afastar Zoom');
+            showToast('Ação: Afastar');
             console.log('Botão de Zoom Out clicado');
         });
 
         document.getElementById('global-view-btn').addEventListener('click', () => {
-            showToast('Ação: Centralizar na Visão Global');
+            showToast('Ação: Visão Global');
             console.log('Botão de Visão Global clicado');
         });
 
         document.getElementById('my-location-btn').addEventListener('click', () => {
-            showToast('Ação: Buscando sua localização...');
+            showToast('Ação: Centralizar na minha localização');
             console.log('Botão de Minha Localização clicado');
         });
+
+        // --- Fim do Script ---
     </script>
 
 </body>
