@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galvão Drones - Hub de Acesso</title>
+    <style>
+        /* --- GERAL --- */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        :root {
+            --laranja-gd: #EF7E13;
+            --verde-gd: #0E5847;
+            --fundo-dark: #1a1a1a;
+            --texto-claro: #f0f0f0;
+            --card-dark: #2c2c2c;
+            --azul-pessoal: #3498db;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--fundo-dark);
+            color: var(--texto-claro);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* --- TELA DE SENHA --- */
+        #password-container {
+            text-align: center;
+            background-color: var(--card-dark);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            border-top: 5px solid var(--laranja-gd);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        #password-container img {
+            width: 80px;
+            vertical-align: middle;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        #password-container h1 {
+            color: var(--laranja-gd);
+            margin-bottom: 10px;
+        }
+
+        #password-input {
+            padding: 12px;
+            border: 2px solid var(--verde-gd);
+            background-color: #333;
+            color: var(--texto-claro);
+            border-radius: 8px;
+            width: calc(100% - 28px);
+            text-align: center;
+            font-size: 1rem;
+            margin-top: 20px;
+        }
+
+        #password-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--verde-gd);
+            color: var(--texto-claro);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #password-button:hover {
+            background-color: #1a8369;
+            transform: scale(1.02);
+        }
+        
+        #error-message {
+            color: #ff6b6b;
+            margin-top: 15px;
+            height: 20px;
+            visibility: hidden;
+        }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        #main-content {
+            display: none; /* Inicia oculto */
+            width: 100%;
+            max-width: 800px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hub-container {
+            background-color: var(--card-dark);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--verde-gd);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--laranja-gd);
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        h2 {
+            color: var(--laranja-gd);
+            border-left: 4px solid var(--laranja-gd);
+            padding-left: 10px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        h2.pessoal {
+            color: var(--azul-pessoal);
+            border-left-color: var(--azul-pessoal);
+        }
+
+        /* --- SEÇÃO DE CONTATOS --- */
+        .contact-info ul {
+            list-style: none;
+            padding: 0;
+        }
+        .contact-info li {
+            background-color: #333;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .contact-info li strong {
+            color: var(--laranja-gd);
+            min-width: 100px;
+            display: inline-block;
+        }
+        .contact-info.pessoal li strong {
+            color: var(--azul-pessoal);
+        }
+        .contact-info a {
+            color: var(--texto-claro);
+            text-decoration: none;
+            transition: color 0.3s;
+            word-break: break-all;
+        }
+        .contact-info a:hover {
+            color: var(--laranja-gd);
+        }
+        .contact-info.pessoal a:hover {
+            color: var(--azul-pessoal);
+        }
+        
+        /* --- BOTÕES DE COMPARTILHAMENTO --- */
+        .share-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.2s;
+            box-sizing: border-box;
+        }
+        .share-button svg {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+        }
+        .share-button:hover {
+            transform: scale(1.01);
+        }
+        
+        #gd-share-button { background-color: #25D366; }
+        #gd-share-button:hover { background-color: #1DA851; }
+        
+        #personal-share-button { background-color: #0078D4; }
+        #personal-share-button:hover { background-color: #005a9e; }
+
+        /* --- HUB DE PROJETOS --- */
+        .project-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .project-list a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--verde-gd);
+            color: var(--texto-claro);
+            padding: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .project-list a:hover {
+            background-color: #1a8369;
+            transform: translateY(-5px);
+        }
+        
+        .project-list.pessoal a {
+            background-color: var(--azul-pessoal);
+        }
+        .project-list.pessoal a:hover {
+            background-color: #2980b9;
+        }
+        
+        .project-list a svg {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- TELA DE LOGIN -->
+    <div id="password-container">
+        <img src="https://i.ibb.co/7bB2Vqg/dronelogo-gd.png" alt="Logo da Galvão Drones">
+        <h1>Acesso Restrito</h1>
+        <p>Hub de Projetos e Contatos</p>
+        <input type="password" id="password-input" placeholder="Digite a senha de acesso">
+        <div id="error-message">Senha incorreta.</div>
+        <button id="password-button">Entrar</button>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL (OCULTO) -->
+    <div id="main-content">
+        <div class="hub-container">
+            <div class="header">
+                <h1>Hub Central</h1>
+                <p style="color: #ccc;">Seu centro de controle de projetos e contatos.</p>
+            </div>
+
+            <!-- SEÇÃO PESSOAL -->
+            <section id="pessoal">
+                <h2 class="pessoal">Uso Pessoal (Mikhaell Galvão)</h2>
+                <ul class="project-list pessoal">
+                    <li><a href="https://mikhaellgalvao.github.io/historiaasaf/" target="_blank">Histórias Para o Asaf</a></li>
+                </ul>
+                <div class="contact-info pessoal">
+                    <ul>
+                        <li><strong>Nome:</strong> Mikhaell Galvão</li>
+                        <li><strong>E-mail:</strong> <a href="mailto:contato@galvaodrones.com.br">contato@galvaodrones.com.br</a></li>
+                        <li><strong>Instagram:</strong> <a href="https://www.instagram.com/Mikhaell_Galvao" target="_blank">@Mikhaell_Galvao</a></li>
+                        <li><strong>WhatsApp:</strong> <a href="https://wa.me/5562984710639" target="_blank">(62) 9 8471-0639</a></li>
+                    </ul>
+                </div>
+                 <a href="#" class="share-button" id="personal-share-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="white"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 439.6c-38.2 0-73.7-11.8-103.6-32.5l-7.6-4.5-77.1 20.3 20.7-75.4-4.9-7.9c-21.6-35.1-33.1-75.3-33.1-116.3C42.1 143.8 124.8 61 223.9 61c47.1 0 91.2 18.5 124.4 51.7 33.2 33.2 51.7 77.3 51.7 124.4-.1 99-81.2 179.5-180.1 179.5zM319.4 309.4c-4.4-2.2-26.2-13-30.2-14.5-4-1.5-7-2.2-9.9 2.2-2.9 4.4-11.4 14.5-14 17.4-2.6 3-5.2 3.3-9.7 1.1-19.1-9.5-35.7-17.8-50.4-32.6-11.9-11.9-20.5-26.6-28.9-42.5-3.1-5.9-6.2-12.4-9.3-18.9-3.1-6.5-1.5-10 .8-13.5 2.1-3.1 4.7-5.9 7.1-8.8 2.3-2.9 3.1-4.9 4.6-8.2 1.5-3.3.8-6.1-.4-8.2-1.1-2.2-9.9-23.8-13.5-32.5-3.6-8.7-7.3-7.5-10-7.6-2.6-.1-5.6-.1-8.5-.1-2.9 0-7.6.4-11.4 4.4-3.9 4-14.9 14.5-14.9 35.3 0 20.8 15.3 40.9 17.4 43.9 2.1 3 29.9 45.7 72.5 63.9 10.5 4.5 18.7 7.2 25.2 9.2 10.7 3.3 20.4 2.9 27.9 1.8 8-1.2 26.2-10.7 29.9-21.1 3.7-10.4 3.7-19.3 2.6-21.1-1.1-1.8-4.1-3-8.5-5.2z"/></svg>
+                    Compartilhar Contato Pessoal
+                </a>
+            </section>
+            
+            <hr style="border-color: #444; margin: 40px 0;">
+
+            <!-- SEÇÃO COMERCIAL -->
+            <section id="comercial">
+                <h2>Uso Comercial (Galvão Drones)</h2>
+                <ul class="project-list">
+                    <li><a href="https://mikhaellgalvao.github.io/sisgalvao/" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="white"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L256 480 136 330.7C110.9 296.3 96 253.9 96 208C96 93.1 189.1 0 304 0s208 93.1 208 208zM304 128c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48zM80 416c-20.5 0-38.3-11.5-46.4-29.2L1.2 312.2c-2.6-5.7-1.1-12.4 3.8-16.4l17.6-14.5c4.8-4 11.6-4.6 17-1.4l27.3 16.4c5.3 3.2 12 1.4 15.5-3.5l4.8-6.9c3.5-5-1.1-11.6-7-13.8L35.5 165c-5.9-2.2-9.5-8.2-9.5-14.5V128c0-13.3 10.7-24 24-24s24 10.7 24 24v19.3l27.2 10.1c5.9 2.2 12.3-1.1 14.5-7L124.8 128c2.2-5.9-1.1-12.3-7-14.5L90.7 103.2c-5.9-2.2-8.2-8.6-6.3-14.3l11-33.1c1.9-5.7 7.7-9.4 13.7-8.6l33.1 4.7c5.9 .8 11.1-2.9 12.8-8.6l10.8-36.9c1.7-5.8 7.3-9.8 13.4-9.8s11.7 4 13.4 9.8l10.8 36.9c1.7 5.7 6.9 9.4 12.8 8.6l33.1-4.7c6-.8 11.8 2.9 13.7 8.6l11 33.1c1.9 5.7-.4 12.1-6.3 14.3L224 113.7c-5.9 2.2-9.2 8.6-7 14.5l9.1 24.5c2.2 5.9 8.6 9.2 14.5 7l24.5-9.1c5.9-2.2 12.1 .4 14.3 6.3l11.6 31.1c2.2 5.9-.9 12.4-6.8 14.6l-28.1 10.5c-5.9 2.2-9.8 8.1-9.8 14.3V224c0 13.3 10.7 24 24 24s24-10.7 24-24v-3.5l28.1-10.5c5.9-2.2 12.3 1.1 14.5 7l11.6 31.1c2.2 5.9-.9 12.4-6.8 14.6l-28.1 10.5c-5.9 2.2-9.8 8.1-9.8 14.3v23.4c0 13.3 10.7 24 24 24s24-10.7 24-24V304l28.1-10.5c5.9-2.2 12.3 1.1 14.5 7l11.6 31.1c2.2 5.9-.9 12.4-6.8 14.6l-28.1 10.5c-5.9 2.2-9.8 8.1-9.8 14.3v19.9c0 12.4-7.2 23.2-18.1 27.6L86.4 414.8C84.4 415.5 82.2 416 80 416z"/></svg>Portal Interno</a></li>
+                    <li><a href="https://www.instagram.com/galvao_drones" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="white"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg>Instagram (Empresa)</a></li>
+                    <li><a href="https://www.google.com/maps/search/?api=1&query=Galvão+Drones+Goiânia" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="white"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>Rotas para a Empresa</a></li>
+                    <li><a href="#" target="_blank">Meu Curso de Mapeamento</a></li>
+                    <li><a href="#" target="_blank">Portfolio de Imagens Aéreas</a></li>
+                    <li><a href="#" target="_blank">Templates de Contratos</a></li>
+                </ul>
+                <div class="contact-info">
+                    <ul>
+                        <li><strong>Site:</strong> <a href="https://www.galvaodrones.com.br" target="_blank">www.galvaodrones.com.br</a></li>
+                        <li><strong>CNPJ:</strong> 60.102.179/0001-10</li>
+                    </ul>
+                </div>
+                <a href="#" class="share-button" id="gd-share-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="white"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 439.6c-38.2 0-73.7-11.8-103.6-32.5l-7.6-4.5-77.1 20.3 20.7-75.4-4.9-7.9c-21.6-35.1-33.1-75.3-33.1-116.3C42.1 143.8 124.8 61 223.9 61c47.1 0 91.2 18.5 124.4 51.7 33.2 33.2 51.7 77.3 51.7 124.4-.1 99-81.2 179.5-180.1 179.5zM319.4 309.4c-4.4-2.2-26.2-13-30.2-14.5-4-1.5-7-2.2-9.9 2.2-2.9 4.4-11.4 14.5-14 17.4-2.6 3-5.2 3.3-9.7 1.1-19.1-9.5-35.7-17.8-50.4-32.6-11.9-11.9-20.5-26.6-28.9-42.5-3.1-5.9-6.2-12.4-9.3-18.9-3.1-6.5-1.5-10 .8-13.5 2.1-3.1 4.7-5.9 7.1-8.8 2.3-2.9 3.1-4.9 4.6-8.2 1.5-3.3.8-6.1-.4-8.2-1.1-2.2-9.9-23.8-13.5-32.5-3.6-8.7-7.3-7.5-10-7.6-2.6-.1-5.6-.1-8.5-.1-2.9 0-7.6.4-11.4 4.4-3.9 4-14.9 14.5-14.9 35.3 0 20.8 15.3 40.9 17.4 43.9 2.1 3 29.9 45.7 72.5 63.9 10.5 4.5 18.7 7.2 25.2 9.2 10.7 3.3 20.4 2.9 27.9 1.8 8-1.2 26.2-10.7 29.9-21.1 3.7-10.4 3.7-19.3 2.6-21.1-1.1-1.8-4.1-3-8.5-5.2z"/></svg>
+                    Compartilhar Contato Comercial
+                </a>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // --- LÓGICA DE ACESSO ---
+        const passwordContainer = document.getElementById('password-container');
+        const mainContent = document.getElementById('main-content');
+        const passwordInput = document.getElementById('password-input');
+        const passwordButton = document.getElementById('password-button');
+        const errorMessage = document.getElementById('error-message');
+
+        // !!! IMPORTANTE: Troque 'alpha' pela sua senha real !!!
+        const correctPassword = 'alpha'; 
+
+        function attemptLogin() {
+            if (passwordInput.value === correctPassword) {
+                passwordContainer.style.display = 'none';
+                mainContent.style.display = 'block';
+            } else {
+                errorMessage.style.visibility = 'visible';
+                passwordInput.value = '';
+                passwordInput.focus();
+                // Oculta a mensagem de erro após 3 segundos
+                setTimeout(() => {
+                    errorMessage.style.visibility = 'hidden';
+                }, 3000);
+            }
+        }
+
+        passwordButton.addEventListener('click', attemptLogin);
+
+        // Permite usar a tecla "Enter" para tentar o login
+        passwordInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                attemptLogin();
+            }
+        });
+
+        // --- LÓGICA DOS BOTÕES DE COMPARTILHAMENTO ---
+        const gdShareButton = document.getElementById('gd-share-button');
+        gdShareButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            const message = `Olá! Estou compartilhando o contato da Galvão Drones, especialista em soluções com drones em Goiânia.\n\n*Site:* www.galvaodrones.com.br\n*Instagram:* @galvao_drones\n*WhatsApp:* (62) 3636-0668\n\nFale com o Mikhaell para consultoria, vendas, manutenção e treinamentos!`;
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        });
+
+        const personalShareButton = document.getElementById('personal-share-button');
+        personalShareButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            const message = `Olá! Segue o contato do Mikhaell Galvão:\n\n*Instagram:* @Mikhaell_Galvao\n*WhatsApp:* (62) 9 8471-0639`;
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        });
+    </script>
+</body>
+</html>
