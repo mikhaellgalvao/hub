@@ -3,126 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interface de Mapa Interativa (Corrigida)</title>
-    
-    <!-- Dependência Externa: Tailwind CSS para estilização. Requer conexão com a internet. -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Dependência Externa: Fonte Inter do Google Fonts. Requer conexão com a internet. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    
+    <title>Hub Central - Mikhaell Galvão</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
-        /* Estilo base para garantir que a fonte seja aplicada */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
+
+        :root {
+            --fundo-dark: #121212;
+            --texto-claro: #f1f1f1;
+            --card-dark: #1e1e1e;
+            --cor-sucesso: #2ecc71;
+            --cor-erro: #e74c3c;
+            --whatsapp-green: #25D366;
+            
+            /* Cores Dinâmicas do Tema */
+            --cor-primaria: #EF7E13; /* Laranja GD */
+            --cor-secundaria: #0E5847; /* Verde GD */
+        }
+
+        body.personal-mode {
+            --cor-primaria: #3498db; /* Azul Pessoal */
+            --cor-secundaria: #8e44ad; /* Roxo Pessoal */
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--fundo-dark);
+            color: var(--texto-claro);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        /* Imagem de fundo para simular o mapa. Não é essencial para a funcionalidade dos botões. */
-        .map-background {
-            background-image: url('https://placehold.co/1200x800/e2e8f0/64748b?text=Visualizacao+do+Mapa');
-            background-size: cover;
-            background-position: center;
+
+        /* --- TELA DE SENHA --- */
+        #password-container {
+            text-align: center;
+            background-color: var(--card-dark);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+            border-top: 5px solid var(--cor-primaria);
+            max-width: 400px;
+            width: 90%;
+            margin-top: 5vh;
+            transition: border-color 0.4s;
         }
-        /* Animação para a notificação (toast) */
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; transform: translateY(20px); }
-            10%, 90% { opacity: 1; transform: translateY(0); }
+        #password-container h1 { color: var(--cor-primaria); transition: color 0.4s; }
+        #password-input { border: 2px solid var(--cor-secundaria); background-color: #333; font-size: 1.1rem; padding: 15px; border-radius: 8px; width: calc(100% - 34px); color: var(--texto-claro); transition: border-color 0.4s; }
+        #password-button { background-color: var(--cor-secundaria); font-size: 1.2rem; padding: 15px; border-radius: 8px; margin-top: 15px; border: none; color: white; cursor: pointer; width: 100%; transition: background-color 0.4s; }
+        #password-button:hover { background-color: var(--cor-primaria); }
+
+        /* --- ESTRUTURA PRINCIPAL --- */
+        #main-content { display: none; width: 100%; max-width: 900px; animation: fadeIn 0.8s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .hub-container { background-color: var(--card-dark); padding: 20px; border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.7); }
+        
+        /* --- SELETOR DE PERFIL --- */
+        .profile-switcher { display: flex; align-items: center; background-color: #2c2c2c; border-radius: 12px; padding: 5px; margin-bottom: 30px; }
+        .profile-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--cor-secundaria); color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1rem; margin-right: 10px; transition: background-color 0.4s; flex-shrink: 0; }
+        .switcher-buttons { flex: 1; display: flex; position: relative; }
+        .profile-switcher-button { flex: 1; padding: 15px 10px; border: none; background: none; color: var(--texto-claro); font-size: 1rem; font-weight: bold; cursor: pointer; z-index: 2; transition: color 0.4s ease; }
+        .profile-switcher-button.active { color: white; }
+        #switcher-glider { position: absolute; height: 100%; width: 50%; background-color: var(--cor-primaria); border-radius: 8px; top: 0; left: 0; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s; }
+        
+        /* Oculta/Mostra seções com base no perfil ativo */
+        body:not(.personal-mode) #pessoal { display: none; }
+        body.personal-mode #comercial, body.personal-mode #tools { display: none; }
+        
+        h2 { color: var(--cor-primaria); border-left: 4px solid var(--cor-primaria); padding-left: 10px; margin-top: 40px; margin-bottom: 20px; transition: color 0.4s, border-color 0.4s; }
+
+        /* --- HUB DE PROJETOS (GLASSMORPHISM) --- */
+        .project-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; padding: 0; list-style: none; margin-top: 20px; }
+        .project-item a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border-radius: 16px;
+            aspect-ratio: 1 / 1;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
         }
-        .toast-notification {
-            animation: fadeInOut 4s ease-in-out forwards;
+        .project-item a:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
+        .project-item a svg { width: 45%; height: 45%; fill: var(--texto-claro); transition: transform 0.3s; }
+        .project-item a:hover svg { transform: scale(1.1); }
+        
+        /* --- SEÇÃO PESSOAL E DESTAQUE ASAF --- */
+        .asaf-story-card { background: linear-gradient(135deg, var(--cor-primaria), var(--cor-secundaria)); border-radius: 12px; padding: 25px; text-align: center; color: white; }
+        .asaf-story-card h3 { margin: 0 0 10px 0; font-size: 1.5rem; }
+        .asaf-story-card a { color: white; text-decoration: none; display: block; margin-top: 15px; font-weight: bold; background-color: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px; transition: background-color 0.3s; }
+        .asaf-story-card a:hover { background-color: rgba(255,255,255,0.4); }
+
+        /* --- SEÇÃO DE FERRAMENTAS --- */
+        .tools-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 600px) { .tools-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); } }
+        .tool-card { background-color: #2c2c2c; padding: 20px; border-radius: 12px; }
+        .tool-card h3 { margin-top: 0; color: var(--cor-primaria); transition: color 0.4s; }
+        .tool-card input, .tool-card textarea { width: calc(100% - 24px); background: var(--fundo-dark); border: 2px solid var(--cor-secundaria); color: var(--texto-claro); padding: 12px; border-radius: 8px; margin-bottom: 10px; transition: border-color 0.4s; }
+        .tool-card button { background-color: var(--cor-secundaria); color: white; border: none; padding: 12px 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; transition: background-color 0.4s; }
+        #qrcode-container { margin-top: 15px; background: white; padding: 10px; border-radius: 8px; display: flex; justify-content: center; align-items: center; min-height: 128px; }
+        
+        hr { border: none; height: 1px; background-color: #333; margin: 40px 0; }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="professional-mode">
 
-    <div id="app" class="relative w-screen h-screen overflow-hidden">
-        <!-- Fundo do Mapa -->
-        <div class="absolute inset-0 map-background"></div>
+    <div id="password-container">
+        <h1>Acesso Restrito</h1>
+        <input type="password" id="password-input" placeholder="Senha">
+        <button id="password-button">Entrar</button>
+    </div>
 
-        <!-- Título da Interface -->
-        <div class="absolute top-4 left-1/2 -translate-x-1/2 bg-white bg-opacity-90 p-3 rounded-xl shadow-lg">
-            <h1 class="text-xl font-bold text-gray-800">Painel de Controle</h1>
-        </div>
+    <div id="main-content">
+        <div class="hub-container">
+            <div class="profile-switcher">
+                <div class="profile-avatar">MG</div>
+                <div class="switcher-buttons">
+                    <div id="switcher-glider"></div>
+                    <button class="profile-switcher-button active" data-mode="professional">Profissional</button>
+                    <button class="profile-switcher-button" data-mode="personal">Pessoal</button>
+                </div>
+            </div>
 
-        <!-- Controles do Mapa: Posicionados no canto inferior direito -->
-        <div class="absolute bottom-5 right-5 flex flex-col items-center gap-4">
+            <section id="pessoal">
+                <h2>Pessoal</h2>
+                <div class="asaf-story-card">
+                    <h3>Histórias Para o Asaf</h3>
+                    <p>"A Aventura da Estrela que Queria Brilhar Mais Forte"</p>
+                    <a href="https://mikhaellgalvao.github.io/historiaasaf/" target="_blank">Ver todas as histórias</a>
+                </div>
+                <div class="project-list">
+                    <!-- Ícone de Portão -->
+                    <div class="project-item"><a href="#" title="Acender Portão"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M48 32C21.5 32 0 53.5 0 80V432c0 26.5 21.5 48 48 48H192c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48H48zM160 224H80v64h80V224zM400 32C373.5 32 352 53.5 352 80V432c0 26.5 21.5 48 48 48H592c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48H400zM512 224H432v64h80V224z"/></svg></a></div>
+                    <!-- Ícone do Instagram -->
+                    <div class="project-item"><a href="https://www.instagram.com/Mikhaell_Galvao" title="Instagram Pessoal" target="_blank"><svg viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg></a></div>
+                    <!-- Ícone do WhatsApp -->
+                    <div class="project-item"><a href="https://wa.me/5562984710639" title="WhatsApp Pessoal" target="_blank"><svg viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 439.6c-38.2 0-73.7-11.8-103.6-32.5l-7.6-4.5-77.1 20.3 20.7-75.4-4.9-7.9c-21.6-35.1-33.1-75.3-33.1-116.3C42.1 143.8 124.8 61 223.9 61c47.1 0 91.2 18.5 124.4 51.7 33.2 33.2 51.7 77.3 51.7 124.4-.1 99-81.2 179.5-180.1 179.5zM319.4 309.4c-4.4-2.2-26.2-13-30.2-14.5-4-1.5-7-2.2-9.9 2.2-2.9 4.4-11.4 14.5-14 17.4-2.6 3-5.2 3.3-9.7 1.1-19.1-9.5-35.7-17.8-50.4-32.6-11.9-11.9-20.5-26.6-28.9-42.5-3.1-5.9-6.2-12.4-9.3-18.9-3.1-6.5-1.5-10 .8-13.5 2.1-3.1 4.7-5.9 7.1-8.8 2.3-2.9 3.1-4.9 4.6-8.2 1.5-3.3.8-6.1-.4-8.2-1.1-2.2-9.9-23.8-13.5-32.5-3.6-8.7-7.3-7.5-10-7.6-2.6-.1-5.6-.1-8.5-.1-2.9 0-7.6.4-11.4 4.4-3.9 4-14.9 14.5-14.9 35.3 0 20.8 15.3 40.9 17.4 43.9 2.1 3 29.9 45.7 72.5 63.9 10.5 4.5 18.7 7.2 25.2 9.2 10.7 3.3 20.4 2.9 27.9 1.8 8-1.2 26.2-10.7 29.9-21.1 3.7-10.4 3.7-19.3 2.6-21.1-1.1-1.8-4.1-3-8.5-5.2z"/></svg></a></div>
+                </div>
+            </section>
+
+            <section id="comercial">
+                <h2>Galvão Drones</h2>
+                <div class="project-list">
+                    <!-- Ícone de Globo -->
+                    <div class="project-item"><a href="https://www.galvaodrones.com.br" title="Site Oficial" target="_blank"><svg viewBox="0 0 512 512"><path d="M352 256c0 22.2-1.2 43.6-3.3 64H163.3c-2.1-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64H348.7c2.1 20.4 3.3 41.8 3.3 64zM512 256c0 141.4-114.6 256-256 256S0 397.4 0 256S114.6 0 256 0S512 114.6 512 256zM112 320h288c-10.2 55.2-32.5 103.2-63.1 139.5c-30.6-36.3-52.9-84.3-63.1-139.5H112zM176.1 192H335.9c-10.2-55.2-32.5-103.2-63.1-139.5c-30.6 36.3-52.9 84.3-63.1 139.5z"/></svg></a></div>
+                    <!-- Ícone de Dashboard (CORRIGIDO) -->
+                    <div class="project-item"><a href="https://mikhaellgalvao.github.io/sisgalvao/" title="Portal Interno" target="_blank"><svg viewBox="0 0 512 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM160 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H192c-17.7 0-32-14.3-32-32zm32-128H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H192c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg></a></div>
+                    <!-- Ícone do Instagram -->
+                    <div class="project-item"><a href="https://www.instagram.com/galvao_drones" title="Instagram" target="_blank"><svg viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg></a></div>
+                    <!-- Ícone de Pino de Localização -->
+                    <div class="project-item"><a href="https://www.google.com/maps/search/?api=1&query=Galvão+Drones+Goiânia" title="Rotas para a Empresa" target="_blank"><svg viewBox="0 0 384 512"><path d="M215.7 499.2C267 435 384 279.4 384 192 384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg></a></div>
+                </div>
+            </section>
             
-            <!-- Grupo de Botões de Zoom -->
-            <div class="bg-white shadow-xl rounded-xl p-2 flex flex-col gap-1 border border-gray-200">
-                <button id="zoom-in-btn" title="Aproximar" class="w-12 h-12 flex items-center justify-center text-gray-700 hover:bg-gray-200 active:bg-gray-300 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-                <button id="zoom-out-btn" title="Afastar" class="w-12 h-12 flex items-center justify-center text-gray-700 hover:bg-gray-200 active:bg-gray-300 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-            </div>
-
-            <!-- Grupo de Botões de Navegação (Globo e Pin) -->
-            <div class="bg-white shadow-xl rounded-xl p-2 flex flex-col gap-1 border border-gray-200">
-                <!-- Botão Ícone de Globo -->
-                <button id="global-view-btn" title="Visão Global" class="w-12 h-12 flex items-center justify-center text-gray-700 hover:bg-gray-200 active:bg-gray-300 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                </button>
-                
-                <!-- Botão Ícone de PIN de Localização -->
-                <button id="my-location-btn" title="Minha Localização" class="w-12 h-12 flex items-center justify-center text-white bg-orange-500 hover:bg-orange-600 active:bg-orange-700 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                </button>
-            </div>
+            <hr>
+            
+            <section id="tools">
+                <h2>Canivete Suíço</h2>
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <h3>Gerador de QR Code</h3>
+                        <input type="text" id="qr-input" placeholder="Cole um link ou texto aqui">
+                        <button id="qr-button">Gerar</button>
+                        <div id="qrcode-container"></div>
+                    </div>
+                    <div class="tool-card">
+                        <h3>Bloco de Notas Rápido</h3>
+                        <textarea id="quick-notes" rows="6" placeholder="Salvo automaticamente..."></textarea>
+                    </div>
+                </div>
+            </section>
         </div>
-        
-        <!-- Container para Notificações (Toasts) -->
-        <div id="toast-container" class="fixed bottom-5 left-1/2 -translate-x-1/2 w-full max-w-sm z-50 pointer-events-none"></div>
-
     </div>
 
     <script>
-        // --- Início do Script ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const passwordContainer = document.getElementById('password-container');
+            const mainContent = document.getElementById('main-content');
+            const passwordInput = document.getElementById('password-input');
+            const passwordButton = document.getElementById('password-button');
+            const correctPassword = 'mk0639'; 
 
-        // Função para exibir uma notificação temporária (toast)
-        function showToast(message) {
-            const container = document.getElementById('toast-container');
-            
-            // Cria o elemento da notificação
-            const toast = document.createElement('div');
-            toast.className = 'toast-notification bg-gray-800 text-white text-center py-3 px-6 rounded-lg shadow-xl mb-2';
-            toast.textContent = message;
-            
-            // Adiciona a notificação ao container
-            container.appendChild(toast);
+            function attemptLogin() {
+                if (passwordInput.value === correctPassword) {
+                    passwordContainer.style.display = 'none';
+                    mainContent.style.display = 'block';
+                } else {
+                    passwordInput.value = '';
+                }
+            }
+            passwordButton.addEventListener('click', attemptLogin);
+            passwordInput.addEventListener('keyup', (event) => { if (event.key === 'Enter') attemptLogin(); });
 
-            // A animação CSS cuida do aparecimento e desaparecimento.
-            // O elemento é removido do DOM após a animação para não acumular.
-            setTimeout(() => {
-                toast.remove();
-            }, 4000); // Duração da animação é 4s
-        }
+            const switcherButtons = document.querySelectorAll('.profile-switcher-button');
+            const glider = document.getElementById('switcher-glider');
 
-        // Adiciona os "escutadores" de eventos aos botões
-        document.getElementById('zoom-in-btn').addEventListener('click', () => {
-            showToast('Ação: Aproximar');
-            console.log('Botão de Zoom In clicado');
+            switcherButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    switcherButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const mode = this.dataset.mode;
+                    if (mode === 'personal') {
+                        glider.style.transform = 'translateX(100%)';
+                        body.classList.add('personal-mode');
+                    } else {
+                        glider.style.transform = 'translateX(0%)';
+                        body.classList.remove('personal-mode');
+                    }
+                });
+            });
+
+            const qrButton = document.getElementById('qr-button');
+            const qrInput = document.getElementById('qr-input');
+            const qrcodeContainer = document.getElementById('qrcode-container');
+            let qrcode = new QRCode(qrcodeContainer, { width: 128, height: 128, colorDark : "#f1f1f1", colorLight : "#1e1e1e" });
+            qrButton.addEventListener('click', () => { if (qrInput.value) qrcode.makeCode(qrInput.value); });
+
+            const quickNotes = document.getElementById('quick-notes');
+            quickNotes.value = localStorage.getItem('quickNotes') || '';
+            quickNotes.addEventListener('keyup', () => localStorage.setItem('quickNotes', quickNotes.value));
         });
-
-        document.getElementById('zoom-out-btn').addEventListener('click', () => {
-            showToast('Ação: Afastar');
-            console.log('Botão de Zoom Out clicado');
-        });
-
-        document.getElementById('global-view-btn').addEventListener('click', () => {
-            showToast('Ação: Visão Global');
-            console.log('Botão de Visão Global clicado');
-        });
-
-        document.getElementById('my-location-btn').addEventListener('click', () => {
-            showToast('Ação: Centralizar na minha localização');
-            console.log('Botão de Minha Localização clicado');
-        });
-
-        // --- Fim do Script ---
     </script>
-
 </body>
 </html>
 
