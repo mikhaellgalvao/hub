@@ -4,32 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galvão Drones - Hub Central</title>
-    <!-- Biblioteca para gerar QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         /* --- GERAL E TEMAS --- */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
 
         :root {
-            --fundo-dark: #1a1a1a;
-            --texto-claro: #f0f0f0;
-            --card-dark: #2c2c2c;
+            --fundo-dark: #121212;
+            --texto-claro: #f1f1f1;
+            --card-dark: #1e1e1e;
             
             /* Tema Profissional (Padrão) */
             --cor-primaria: #EF7E13; /* Laranja GD */
             --cor-secundaria: #0E5847; /* Verde GD */
-            --cor-borda-header: #0E5847;
             
             /* Cores Estáticas */
             --cor-sucesso: #2ecc71;
             --cor-erro: #e74c3c;
-        }
-
-        body.personal-theme {
-            /* Tema Pessoal */
-            --cor-primaria: #3498db; /* Azul Pessoal */
-            --cor-secundaria: #8e44ad; /* Roxo Gamer */
-            --cor-borda-header: #3498db;
+            --azul-pessoal: #3498db;
+            --roxo-pessoal: #8e44ad;
         }
 
         body {
@@ -37,125 +30,149 @@
             background-color: var(--fundo-dark);
             color: var(--texto-claro);
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             box-sizing: border-box;
-            transition: background-color 0.3s;
         }
 
         /* --- TELA DE SENHA --- */
         #password-container {
             text-align: center;
             background-color: var(--card-dark);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.7);
             border-top: 5px solid var(--cor-primaria);
             max-width: 400px;
             width: 90%;
+            margin-top: 5vh;
         }
         #password-container h1 { color: var(--cor-primaria); }
-        #password-input { border-color: var(--cor-secundaria); }
-        #password-button { background-color: var(--cor-secundaria); }
+        #password-input { border-color: var(--cor-secundaria); background-color: #333; font-size: 1.1rem; padding: 15px; border-radius: 8px; width: calc(100% - 34px); }
+        #password-button { background-color: var(--cor-secundaria); font-size: 1.2rem; padding: 15px; border-radius: 8px; margin-top: 15px; border: none; color: white; cursor: pointer; width: 100%; }
         #password-button:hover { background-color: var(--cor-primaria); }
 
         /* --- ESTRUTURA PRINCIPAL --- */
         #main-content { display: none; width: 100%; max-width: 900px; animation: fadeIn 0.8s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        .hub-container { background-color: var(--card-dark); padding: 30px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
-        .header { text-align: center; border-bottom: 2px solid var(--cor-borda-header); padding-bottom: 20px; margin-bottom: 30px; transition: border-color 0.3s; }
-        .header h1 { color: var(--cor-primaria); margin: 0; font-size: 2.5rem; transition: color 0.3s; }
-        h2 { color: var(--cor-primaria); border-left: 4px solid var(--cor-primaria); padding-left: 10px; margin-top: 40px; margin-bottom: 20px; transition: color 0.3s, border-color 0.3s; }
+        .hub-container { background-color: var(--card-dark); padding: 20px; border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.7); }
         
-        /* --- BOTÃO DE TEMA --- */
-        #theme-switcher { position: fixed; top: 20px; right: 20px; background: var(--card-dark); border: 2px solid var(--cor-primaria); color: var(--cor-primaria); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; z-index: 1000; transition: all 0.3s; }
-        #theme-switcher:hover { transform: scale(1.1) rotate(15deg); }
-        #theme-switcher svg { width: 20px; height: 20px; }
-
-        /* --- DASHBOARD DINÂMICO --- */
-        .dashboard-card { background-color: #333; border-left: 5px solid var(--cor-sucesso); border-radius: 8px; padding: 20px; margin-bottom: 40px; }
-        .dashboard-card h3 { margin-top: 0; color: var(--cor-sucesso); }
-        .dashboard-card p { margin-bottom: 0; }
-        .dashboard-card a { color: var(--texto-claro); font-weight: bold; }
+        /* --- SELETOR DE PERFIL --- */
+        .profile-switcher {
+            display: flex;
+            background-color: #2c2c2c;
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .profile-switcher-button {
+            flex: 1;
+            padding: 15px 10px;
+            border: none;
+            background: none;
+            color: var(--texto-claro);
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 2;
+            transition: color 0.4s ease;
+        }
+        .profile-switcher-button.active {
+            color: white;
+        }
+        #switcher-glider {
+            position: absolute;
+            height: calc(100% - 10px);
+            width: calc(50% - 5px);
+            background-color: var(--cor-primaria);
+            border-radius: 8px;
+            top: 5px;
+            left: 5px;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s;
+        }
+        
+        /* Oculta/Mostra seções com base no perfil ativo */
+        body:not(.personal-mode) #pessoal,
+        body.personal-mode #comercial,
+        body.personal-mode #tools {
+            display: none;
+        }
+        
+        h2 { color: var(--cor-primaria); border-left: 4px solid var(--cor-primaria); padding-left: 10px; margin-top: 40px; margin-bottom: 20px; transition: color 0.3s, border-color 0.3s; }
+        body.personal-mode h2 { color: var(--azul-pessoal); border-left-color: var(--azul-pessoal); }
 
         /* --- HUB DE PROJETOS E GAMIFICAÇÃO --- */
-        .project-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; padding: 0; list-style: none; }
-        .project-item { background-color: var(--cor-secundaria); border-radius: 8px; transition: all 0.3s; position: relative; overflow: hidden; }
-        .project-item:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .project-item a { display: flex; align-items: center; justify-content: center; color: var(--texto-claro); padding: 20px; text-decoration: none; font-weight: bold; }
-        .project-item a svg { margin-right: 10px; width: 20px; height: 20px; fill: white; }
+        .project-list { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 0; list-style: none; }
+        @media (min-width: 600px) { .project-list { grid-template-columns: repeat(2, 1fr); } }
+        .project-item { background-color: var(--cor-secundaria); border-radius: 12px; transition: all 0.3s; position: relative; overflow: hidden; }
+        body.personal-mode .project-item { background-color: var(--azul-pessoal); }
+        .project-item:hover { transform: scale(1.03); box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
+        .project-item a { display: flex; align-items: center; justify-content: center; color: var(--texto-claro); padding: 25px 20px; text-decoration: none; font-weight: bold; font-size: 1.1rem; }
+        .project-item a svg { margin-right: 12px; width: 22px; height: 22px; fill: white; }
         .progress-bar { background-color: rgba(0,0,0,0.3); height: 5px; width: 100%; position: absolute; bottom: 0; }
         .progress { background-color: var(--cor-sucesso); height: 100%; }
-        .badge { position: absolute; top: 10px; right: 10px; background-color: var(--cor-sucesso); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .badge { position: absolute; top: 12px; right: 12px; background-color: var(--cor-sucesso); color: white; font-size: 12px; padding: 3px 8px; border-radius: 6px; font-weight: bold; }
         
         /* --- SEÇÃO PESSOAL E DESTAQUE ASAF --- */
-        .asaf-story-card { background: linear-gradient(135deg, #2980b9, #8e44ad); border-radius: 8px; padding: 25px; text-align: center; color: white; margin-bottom: 15px; }
+        .asaf-story-card { background: linear-gradient(135deg, #2980b9, #8e44ad); border-radius: 12px; padding: 25px; text-align: center; color: white; margin-bottom: 15px; }
         .asaf-story-card h3 { margin: 0 0 10px 0; font-size: 1.5rem; }
-        .asaf-story-card p { margin: 0; font-style: italic; opacity: 0.9; }
-        .asaf-story-card a { color: white; text-decoration: none; display: block; margin-top: 15px; font-weight: bold; background-color: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; transition: background-color 0.3s; }
+        .asaf-story-card a { color: white; text-decoration: none; display: block; margin-top: 15px; font-weight: bold; background-color: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px; transition: background-color 0.3s; }
         .asaf-story-card a:hover { background-color: rgba(255,255,255,0.4); }
 
         /* --- SEÇÃO DE FERRAMENTAS --- */
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .tool-card { background-color: #333; padding: 20px; border-radius: 8px; }
+        .tools-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 600px) { .tools-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); } }
+        .tool-card { background-color: #2c2c2c; padding: 20px; border-radius: 12px; }
         .tool-card h3 { margin-top: 0; color: var(--cor-primaria); }
-        .tool-card input, .tool-card textarea { width: calc(100% - 24px); background: var(--fundo-dark); border: 2px solid var(--cor-secundaria); color: var(--texto-claro); padding: 10px; border-radius: 5px; margin-bottom: 10px; }
-        .tool-card button { background-color: var(--cor-secundaria); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
-        #qrcode-container { margin-top: 15px; background: white; padding: 10px; border-radius: 5px; display: flex; justify-content: center; align-items: center; min-height: 128px; }
-        #flight-time-result { font-weight: bold; margin-top: 10px; }
-
+        body.personal-mode .tool-card h3 { color: var(--azul-pessoal); }
+        .tool-card input, .tool-card textarea { width: calc(100% - 24px); background: var(--fundo-dark); border: 2px solid var(--cor-secundaria); color: var(--texto-claro); padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+        body.personal-mode .tool-card input, body.personal-mode .tool-card textarea { border-color: var(--roxo-pessoal); }
+        .tool-card button { background-color: var(--cor-secundaria); color: white; border: none; padding: 12px 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
+        body.personal-mode .tool-card button { background-color: var(--roxo-pessoal); }
+        #qrcode-container { margin-top: 15px; background: white; padding: 10px; border-radius: 8px; display: flex; justify-content: center; align-items: center; min-height: 128px; }
+        
         /* --- OUTROS --- */
-        hr { border-color: #444; margin: 40px 0; }
+        hr { border: none; height: 1px; background-color: #333; margin: 40px 0; }
         .contact-info ul { list-style: none; padding: 0; }
-        .contact-info li { background-color: #333; margin-bottom: 10px; padding: 15px; border-radius: 8px; }
+        .contact-info li { background-color: #2c2c2c; margin-bottom: 10px; padding: 15px; border-radius: 12px; }
         .contact-info li strong { color: var(--cor-primaria); min-width: 80px; display: inline-block; }
-        .share-button { display: flex; align-items: center; justify-content: center; width: 100%; padding: 15px; margin-top: 20px; color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; text-decoration: none; transition: background-color 0.3s; box-sizing: border-box; }
-        #personal-share-button { background-color: #0078D4; }
+        body.personal-mode .contact-info li strong { color: var(--azul-pessoal); }
+        .share-button { display: flex; align-items: center; justify-content: center; width: 100%; padding: 18px; margin-top: 20px; color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer; text-decoration: none; transition: background-color 0.3s; box-sizing: border-box; }
+        #personal-share-button { background-color: var(--azul-pessoal); }
         #gd-share-button { background-color: #25D366; }
     </style>
 </head>
-<body>
-
-    <div id="theme-switcher" title="Alternar Tema">
-        <svg id="theme-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.591a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.836 17.836a.75.75 0 01-1.06 0l-1.59-1.591a.75.75 0 111.06-1.06l1.591 1.59a.75.75 0 010 1.061zM12 21a.75.75 0 01-.75.75v2.25a.75.75 0 011.5 0V21.75a.75.75 0 01-.75-.75zM5.106 17.836a.75.75 0 010-1.06l1.591-1.59a.75.75 0 011.06 1.06l-1.59 1.591a.75.75 0 01-1.06 0zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM6.106 5.106a.75.75 0 011.06 0l1.59 1.591a.75.75 0 01-1.06 1.06L5.106 6.167a.75.75 0 010-1.06z"></path></svg>
-    </div>
+<body class="professional-mode">
 
     <!-- TELA DE LOGIN -->
     <div id="password-container">
-        <img src="https://i.ibb.co/7bB2Vqg/dronelogo-gd.png" alt="">
+        <img src="https://i.ibb.co/7bB2Vqg/dronelogo-gd.png" alt="[Imagem do Logo da Galvão Drones]">
         <h1>Acesso Restrito</h1>
         <input type="password" id="password-input" placeholder="Digite a senha de acesso">
-        <div id="error-message" style="color: var(--cor-erro); margin-top: 15px; height: 20px; visibility: hidden;">Senha incorreta.</div>
+        <div id="error-message">Senha incorreta.</div>
         <button id="password-button">Entrar</button>
     </div>
 
     <!-- CONTEÚDO PRINCIPAL (OCULTO) -->
     <div id="main-content">
         <div class="hub-container">
-            <div class="header">
-                <h1>Hub Central</h1>
-                <p style="color: #ccc;">Seu painel de controle pessoal e profissional.</p>
+            
+            <!-- SELETOR DE PERFIL -->
+            <div class="profile-switcher">
+                <div id="switcher-glider"></div>
+                <button class="profile-switcher-button active" data-mode="professional">Profissional</button>
+                <button class="profile-switcher-button" data-mode="personal">Pessoal</button>
             </div>
 
-            <!-- 1. DASHBOARD DINÂMICO -->
-            <section id="dashboard">
-                <div class="dashboard-card">
-                    <h3>🚀 Projeto em Foco</h3>
-                    <!-- EDITE AQUI para destacar seu projeto mais recente -->
-                    <p>Lançamento do novo <a href="#" target="_blank">Curso de Manutenção de Drones Agrícolas</a>. Vagas abertas!</p>
-                </div>
-            </section>
-            
-            <!-- 2. SEÇÃO PESSOAL -->
+            <!-- SEÇÃO PESSOAL -->
             <section id="pessoal">
-                <h2>Uso Pessoal (Mikhaell Galvão)</h2>
                 <div class="asaf-story-card">
                     <h3>Histórias Para o Asaf</h3>
-                    <!-- Esta parte pode ser atualizada dinamicamente no futuro -->
-                    <p id="latest-story-title">"A Aventura da Estrela que Queria Brilhar Mais Forte"</p>
+                    <p>"A Aventura da Estrela que Queria Brilhar Mais Forte"</p>
                     <a href="https://mikhaellgalvao.github.io/historiaasaf/" target="_blank">Ver todas as histórias</a>
                 </div>
                 <div class="contact-info">
@@ -171,50 +188,22 @@
                 </a>
             </section>
 
-            <hr>
-
-            <!-- 3. SEÇÃO DE FERRAMENTAS -->
-            <section id="tools">
-                <h2>Canivete Suíço Digital</h2>
-                <div class="tools-grid">
-                    <div class="tool-card">
-                        <h3>Gerador de QR Code</h3>
-                        <input type="text" id="qr-input" placeholder="Cole um link ou texto aqui">
-                        <button id="qr-button">Gerar QR Code</button>
-                        <div id="qrcode-container"></div>
-                    </div>
-                    <div class="tool-card">
-                        <h3>Bloco de Notas Rápido</h3>
-                        <textarea id="quick-notes" rows="6" placeholder="Suas anotações são salvas automaticamente..."></textarea>
-                    </div>
-                    <div class="tool-card">
-                        <h3>Calculadora de Voo</h3>
-                        <input type="number" id="battery-mah" placeholder="Capacidade da bateria (mAh)">
-                        <input type="number" id="drone-amps" placeholder="Consumo médio (Amps)">
-                        <button id="calc-flight-time">Calcular Tempo</button>
-                        <p id="flight-time-result">Tempo de voo estimado: -- min</p>
-                    </div>
-                </div>
-            </section>
-            
-            <hr>
-
-            <!-- 4. SEÇÃO COMERCIAL -->
+            <!-- SEÇÃO COMERCIAL -->
             <section id="comercial">
-                <h2>Uso Comercial (Galvão Drones)</h2>
+                <h2>Galvão Drones</h2>
                 <div class="project-list">
-                    <!-- Item com progresso -->
-                    <div class="project-item">
-                        <a href="#" target="_blank">Meu Curso de Mapeamento</a>
-                        <div class="progress-bar"><div class="progress" style="width: 75%;"></div></div>
-                    </div>
-                    <!-- Item com emblema de concluído -->
                     <div class="project-item">
                         <a href="https://www.galvaodrones.com.br" target="_blank">Site Oficial</a>
                         <div class="badge">🏆</div>
                     </div>
-                    <div class="project-item"><a href="https://mikhaellgalvao.github.io/sisgalvao/" target="_blank">Portal Interno</a></div>
-                    <div class="project-item"><a href="https://www.instagram.com/galvao_drones" target="_blank">Instagram (Empresa)</a></div>
+                    <div class="project-item">
+                        <a href="https://mikhaellgalvao.github.io/sisgalvao/" target="_blank">Portal Interno</a>
+                    </div>
+                    <div class="project-item">
+                        <a href="#" target="_blank">Curso de Mapeamento</a>
+                        <div class="progress-bar"><div class="progress" style="width: 75%;"></div></div>
+                    </div>
+                    <div class="project-item"><a href="https://www.instagram.com/galvao_drones" target="_blank">Instagram</a></div>
                     <div class="project-item"><a href="https://www.google.com/maps/search/?api=1&query=Galvão+Drones+Goiânia" target="_blank">Rotas para a Empresa</a></div>
                     <div class="project-item"><a href="#" target="_blank">Templates de Contratos</a></div>
                 </div>
@@ -222,6 +211,25 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="white"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 439.6c-38.2 0-73.7-11.8-103.6-32.5l-7.6-4.5-77.1 20.3 20.7-75.4-4.9-7.9c-21.6-35.1-33.1-75.3-33.1-116.3C42.1 143.8 124.8 61 223.9 61c47.1 0 91.2 18.5 124.4 51.7 33.2 33.2 51.7 77.3 51.7 124.4-.1 99-81.2 179.5-180.1 179.5zM319.4 309.4c-4.4-2.2-26.2-13-30.2-14.5-4-1.5-7-2.2-9.9 2.2-2.9 4.4-11.4 14.5-14 17.4-2.6 3-5.2 3.3-9.7 1.1-19.1-9.5-35.7-17.8-50.4-32.6-11.9-11.9-20.5-26.6-28.9-42.5-3.1-5.9-6.2-12.4-9.3-18.9-3.1-6.5-1.5-10 .8-13.5 2.1-3.1 4.7-5.9 7.1-8.8 2.3-2.9 3.1-4.9 4.6-8.2 1.5-3.3.8-6.1-.4-8.2-1.1-2.2-9.9-23.8-13.5-32.5-3.6-8.7-7.3-7.5-10-7.6-2.6-.1-5.6-.1-8.5-.1-2.9 0-7.6.4-11.4 4.4-3.9 4-14.9 14.5-14.9 35.3 0 20.8 15.3 40.9 17.4 43.9 2.1 3 29.9 45.7 72.5 63.9 10.5 4.5 18.7 7.2 25.2 9.2 10.7 3.3 20.4 2.9 27.9 1.8 8-1.2 26.2-10.7 29.9-21.1 3.7-10.4 3.7-19.3 2.6-21.1-1.1-1.8-4.1-3-8.5-5.2z"/></svg>
                     Compartilhar Contato Comercial
                 </a>
+            </section>
+            
+            <hr>
+            
+            <!-- SEÇÃO DE FERRAMENTAS -->
+            <section id="tools">
+                <h2>Canivete Suíço</h2>
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <h3>Gerador de QR Code</h3>
+                        <input type="text" id="qr-input" placeholder="Cole um link ou texto aqui">
+                        <button id="qr-button">Gerar</button>
+                        <div id="qrcode-container"></div>
+                    </div>
+                    <div class="tool-card">
+                        <h3>Bloco de Notas Rápido</h3>
+                        <textarea id="quick-notes" rows="6" placeholder="Salvo automaticamente..."></textarea>
+                    </div>
+                </div>
             </section>
         </div>
     </div>
@@ -250,51 +258,41 @@
             passwordButton.addEventListener('click', attemptLogin);
             passwordInput.addEventListener('keyup', (event) => { if (event.key === 'Enter') attemptLogin(); });
 
-            // --- LÓGICA DO TEMA ---
-            const themeSwitcher = document.getElementById('theme-switcher');
+            // --- LÓGICA DO SELETOR DE PERFIL ---
+            const switcherButtons = document.querySelectorAll('.profile-switcher-button');
+            const glider = document.getElementById('switcher-glider');
             const body = document.body;
-            const currentTheme = localStorage.getItem('theme');
-            if (currentTheme) body.classList.add(currentTheme);
-            
-            themeSwitcher.addEventListener('click', () => {
-                body.classList.toggle('personal-theme');
-                let theme = body.classList.contains('personal-theme') ? 'personal-theme' : '';
-                localStorage.setItem('theme', theme);
+
+            switcherButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    switcherButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const mode = this.dataset.mode;
+                    if (mode === 'personal') {
+                        glider.style.transform = 'translateX(100%)';
+                        glider.style.backgroundColor = 'var(--azul-pessoal)';
+                        body.classList.add('personal-mode');
+                        body.classList.remove('professional-mode');
+                    } else {
+                        glider.style.transform = 'translateX(0%)';
+                        glider.style.backgroundColor = 'var(--cor-primaria)';
+                        body.classList.remove('personal-mode');
+                        body.classList.add('professional-mode');
+                    }
+                });
             });
 
             // --- LÓGICA DAS FERRAMENTAS ---
-            // 1. Gerador de QR Code
             const qrButton = document.getElementById('qr-button');
             const qrInput = document.getElementById('qr-input');
             const qrcodeContainer = document.getElementById('qrcode-container');
-            let qrcode = new QRCode(qrcodeContainer, { width: 128, height: 128 });
+            let qrcode = new QRCode(qrcodeContainer, { width: 128, height: 128, colorDark : "#f1f1f1", colorLight : "#1e1e1e" });
+            qrButton.addEventListener('click', () => { if (qrInput.value) qrcode.makeCode(qrInput.value); });
 
-            qrButton.addEventListener('click', () => {
-                if (qrInput.value) {
-                    qrcode.makeCode(qrInput.value);
-                }
-            });
-
-            // 2. Bloco de Notas Rápido
             const quickNotes = document.getElementById('quick-notes');
             quickNotes.value = localStorage.getItem('quickNotes') || '';
-            quickNotes.addEventListener('keyup', () => {
-                localStorage.setItem('quickNotes', quickNotes.value);
-            });
-
-            // 3. Calculadora de Voo
-            const calcButton = document.getElementById('calc-flight-time');
-            calcButton.addEventListener('click', () => {
-                const mah = parseFloat(document.getElementById('battery-mah').value);
-                const amps = parseFloat(document.getElementById('drone-amps').value);
-                const resultEl = document.getElementById('flight-time-result');
-                if(mah && amps > 0) {
-                    const flightTime = (mah / 1000 / amps) * 60 * 0.8; // 80% de segurança
-                    resultEl.textContent = `Tempo de voo estimado: ${flightTime.toFixed(1)} min`;
-                } else {
-                    resultEl.textContent = 'Valores inválidos.';
-                }
-            });
+            quickNotes.addEventListener('keyup', () => localStorage.setItem('quickNotes', quickNotes.value));
 
             // --- LÓGICA DOS BOTÕES DE COMPARTILHAMENTO ---
             document.getElementById('gd-share-button').addEventListener('click', (e) => {
