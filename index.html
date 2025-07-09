@@ -212,6 +212,79 @@
             box-shadow: 0 0 15px rgba(0, 234, 255, 0.7); /* Sombra azul neon no hover */
             transform: translateY(-5px); /* Efeito de elevação */
         }
+
+        /* Estilo para a área de resposta da IA */
+        .response-area {
+            min-height: 100px; /* Altura mínima para a área de texto */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Estilo específico para o modal de fotos (carrossel) */
+        #canvaModal .modal-content {
+            width: 95%;
+            max-width: 600px; /* Largura máxima do modal */
+            height: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-carousel {
+            position: relative;
+            width: 100%;
+            max-width: 500px; /* Largura máxima do carrossel */
+            height: 300px; /* Altura fixa do carrossel */
+            overflow: hidden;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            background-color: #333; /* Fundo para quando não houver imagem */
+        }
+
+        .carousel-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Garante que a imagem caiba sem cortar */
+            display: none; /* Esconde todas as imagens por padrão */
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+
+        .carousel-image.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+            z-index: 10; /* Garante que os botões fiquem acima da imagem */
+        }
+
+        .carousel-button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .carousel-button.prev {
+            left: 0.5rem;
+        }
+
+        .carousel-button.next {
+            right: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -246,7 +319,7 @@
             <!-- Coluna Esquerda: Imagem do Avatar e Contato -->
             <div class="flex-shrink-0 flex flex-col items-center text-center md:items-start md:text-left md:w-1/3">
                 <div class="glowing-border mb-4">
-                    <img src="https://i.imgur.com/ViDcChZ.jpeg" alt="Foto de perfil de Mikhaell Galvão" class="avatar-img shadow-lg">
+                    <img src="https://i.imgur.com/ViDcChZ.jpeg" alt="" class="avatar-img shadow-lg">
                 </div>
                 <h3 class="text-xl font-bold text-lightText mb-2">Mikhaell Galvão</h3>
                 <div class="text-sm text-grayText space-y-1">
@@ -301,7 +374,7 @@
                     Perguntar
                 </button>
             </div>
-            <div id="aiResponseArea" class="bg-gray-800 p-6 rounded-xl shadow-lg text-left hidden">
+            <div id="aiResponseArea" class="bg-gray-800 p-6 rounded-xl shadow-lg text-left hidden response-area">
                 <p id="aiResponseText" class="text-lightText leading-relaxed"></p>
                 <div id="aiLoadingIndicator" class="flex justify-center items-center mt-4 hidden">
                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-galvaoOrange"></div>
@@ -317,12 +390,12 @@
             <h2 class="text-3xl sm:text-4xl font-bold mb-2 text-center portfolio-title-glow">PORTFÓLIO</h2>
             <p class="text-lg text-lightText mb-12 text-center">Soluções que conectam tecnologia, operação e inovação.</p>
             <!-- Grade responsiva: 1 coluna em celular, 2 em telas pequenas, 3 em telas maiores -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 
                 <!-- Cartão: Soluções com Drones -->
                 <button id="openDronesSubmenuModal" class="portfolio-card-item block bg-gray-800 p-6 rounded-xl border-2 border-transparent shadow-lg transition-all duration-300 ease-in-out flex flex-col items-center text-center cursor-pointer hover:bg-gray-700 portfolio-card-hover">
                     <div class="portfolio-icon mb-4">
-                        <img src="https://i.imgur.com/sg3R7CE.png" alt="Ícone de Drone" class="drone-icon-img">
+                        <img src="https://i.imgur.com/sg3R7CE.png" alt="" class="drone-icon-img">
                     </div>
                     <h3 class="text-xl font-semibold text-lightText">Soluções com Drones</h3>
                     <p class="text-sm text-grayText mt-1">Manutenção, suporte técnico e filmagens aéreas</p>
@@ -341,6 +414,13 @@
                     <h3 class="text-xl font-semibold text-lightText">Automação Inteligente</h3>
                     <p class="text-sm text-grayText mt-1">Bots, integrações e fluxos otimizados com IA</p>
                 </button>
+
+                <!-- Cartão: Fotos -->
+                <button id="openCanvaModal" class="portfolio-card-item block bg-gray-800 p-6 rounded-xl border-2 border-transparent shadow-lg transition-all duration-300 ease-in-out flex flex-col items-center text-center cursor-pointer hover:bg-gray-700 portfolio-card-hover">
+                    <div class="portfolio-icon mb-4">📸</div> <!-- Ícone de câmera -->
+                    <h3 class="text-xl font-semibold text-lightText">Fotos</h3>
+                    <p class="text-sm text-grayText mt-1">Veja nossas criações visuais</p>
+                </button>
             </div>
         </div>
     </section>
@@ -348,69 +428,48 @@
     <!-- Seção de Avaliações -->
     <section id="feedbacks" class="py-16 px-4 md:px-8 bg-darkBg">
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center md:items-start space-y-8 md:space-y-0 md:space-x-12">
-            <div class="flex-shrink-0 text-center md:text-left w-full md:w-auto">
+            <div class="flex-shrink-0 text-center md:text-left w-full">
                 <h2 class="text-3xl sm:text-4xl font-bold mb-6 text-galvaoOrange">AVALIAÇÕES</h2>
                 
-                <!-- Avaliação do Weliton Barbosa -->
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-left mb-6">
-                    <div class="flex items-center mb-4">
-                        <img src="https://placehold.co/40x40/555555/FFFFFF?text=W" alt="Perfil de Weliton Barbosa" class="rounded-full mr-3">
-                        <div>
-                            <p class="text-lightText font-semibold">Weliton Barbosa</p>
-                            <p class="text-grayText text-xs">15 avaliações • 0 foto</p>
-                        </div>
-                    </div>
-                    <div class="text-yellow-400 mb-2">★★★★★ <span class="text-grayText text-sm">15 de nov. de 2023</span></div>
-                    <p class="text-lightText text-sm leading-relaxed">
-                        Honestidade, e rapidez para entregar um serviço, queria agradecer especialmente Mikhaell <br> e o maycon, pela paciência e dedicação, os mlk são bons no que fazem... <br> Me atenderam super bem, é super diretos e solucionado meu problema, dalhe Galvão !
-                    </p>
-                </div>
-
-                <!-- Nova Avaliação: Frederico Vaz -->
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-left mb-6">
-                    <div class="flex items-center mb-4">
-                        <img src="https://placehold.co/40x40/555555/FFFFFF?text=F" alt="Perfil de Frederico Vaz" class="rounded-full mr-3">
-                        <div>
-                            <p class="text-lightText font-semibold">Frederico Vaz</p>
-                            <p class="text-grayText text-xs">13 avaliações • 0 foto</p>
-                        </div>
-                    </div>
-                    <div class="text-yellow-400 mb-2">★★★★★ <span class="text-grayText text-sm">Há 5 semanas</span></div>
-                    <p class="text-lightText text-sm leading-relaxed">
-                        EMPRESA HONESTA!!! Hoje em dia é difícil encontrar pessoas assim, mas muito feliz com o suporte que me deram.
-                    </p>
-                </div>
-
-                <!-- Nova Avaliação: Eduardo Soares -->
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-left mb-6">
-                    <div class="flex items-center mb-4">
-                        <img src="https://placehold.co/40x40/555555/FFFFFF?text=E" alt="Perfil de Eduardo Soares" class="rounded-full mr-3">
-                        <div>
-                            <p class="text-lightText font-semibold">eduardo soares</p>
-                            <p class="text-grayText text-xs">4 avaliações • 0 foto</p>
-                        </div>
-                    </div>
-                    <div class="text-yellow-400 mb-2">★★★★★ <span class="text-grayText text-sm">Há 48 semanas</span></div>
-                    <p class="text-lightText text-sm leading-relaxed">
-                        Muito boa a loja, fiquei surpreso pela atenção ao cliente, respondem muito rápido e a agilidade no serviço é gigantesca, confio muito e com certeza virei cliente!
-                    </p>
-                </div>
-
-                <!-- Botão "Ler mais avaliações" -->
-                <div class="w-full text-center mt-8">
-                    <a href="https://www.google.com/search?q=galvao+drones&sca_esv=8fe472cf0c0bad30&sxsrf=AE3TifO6DRX6iaPTEf4KeyZL4WVIxGjL3Q%3A1751915842631&source=hp&ei=Qh1saPySJPSi1sQP6JzAyAs&iflsig=AOw8s4IAAAAAaGwrUgrmyUM1QbTIy7pjbElpIHuSjB9O&ved=0ahUKEwj8u-WLu6uOAxV0kZUCHWgOELkQ4dUDCBc&uact=5&oq=galvao+drones&gs_lp=Egdnd3Mtd2l6Ig1nYWx2YW8gZHJvbmVzMgoQIxiABBgnGIoFMgUQLhiABDIOEC4YgAQYxwEYjgUYrwEyBRAAGIAEMgUQABiABDIFAAEgAQyBRAAGIAEMgUQABiABDILEC4YgAQYxwEYrwEyBRAAGIAESIcRUJcGWJ0QcAF4AJABAJgB5gKgAaIMqgEHMC40LjEuMrgBA8gBAPgBAZgCCKAC7AyoAgrCAgcQIxgnGOoCwgINECMY8AUYJxjJAhjqAsICCxAAGIAEGLEDGIMBwgIREC4YgAQYsQMY0QMYgwEYxwHCAggQABiABBixA8ICBBAjGCfCAg4QABiABBixAxiDARiKBcICCBAuGIAEGLEDwgILEC4YgAQYsQMYgwGYAw3xBUw6a5RWlCEmkgcHMS40LjAuM6AH9WGyBwcwLjQuMC4zuAfeDMIHBTItMy41yAc_&sclient=gws-wiz#" target="_blank" class="inline-block bg-galvaoOrange hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 btn-gradient">
-                        Ler mais avaliações
-                    </a>
-                </div>
+                <!-- Código do Elfsight Google Reviews -->
+                <script src="https://static.elfsight.com/platform/platform.js" async></script>
+                <div class="elfsight-app-80713eea-afe6-417c-a1bf-705e19346ffe" data-elfsight-app-lazy></div>
 
             </div>
-            <!-- Removendo a citação e o QR Code -->
-            <!-- <div class="flex-grow text-center md:text-right w-full md:w-auto mt-8 md:mt-0>
-                <blockquote class="text-xl italic text-lightText mb-6">
-                    “Mikhaell está sempre um passo à frente, com ideias inovadoras e execução profissional.”
-                </blockquote>
-                <img src="https://placehold.co/100x100/EF7E13/FFFFFF?text=QR" alt="QR Code de contato" class="w-24 h-24 mx-auto md:ml-auto md:mr-0 rounded-lg shadow-md">
-            </div> -->
+        </div>
+    </section>
+
+    <!-- Nova Seção: Galeria de Fotos (mantida, mas o conteúdo do modal de fotos agora é link direto) -->
+    <section id="gallery" class="py-16 px-4 md:px-8 bg-gray-900">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl sm:text-4xl font-bold mb-2 text-center portfolio-title-glow">GALERIA DE FOTOS</h2>
+            <p class="text-lg text-lightText mb-12 text-center">Momentos capturados por uma nova perspectiva.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Imagem 1 -->
+                <div class="overflow-hidden rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105">
+                    <img src="https://placehold.co/600x400/0E5847/FFFFFF?text=Vista+Aérea+1" alt="" class="w-full h-48 object-cover">
+                </div>
+                <!-- Imagem 2 -->
+                <div class="overflow-hidden rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105">
+                    <img src="https://placehold.co/600x400/EF7E13/FFFFFF?text=Inspeção+Drone+2" alt="" class="w-full h-48 object-cover">
+                </div>
+                <!-- Imagem 3 -->
+                <div class="overflow-hidden rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105">
+                    <img src="https://placehold.co/600x400/0E5847/FFFFFF?text=Agricultura+3" alt="" class="w-full h-48 object-cover">
+                </div>
+                <!-- Imagem 4 -->
+                <div class="overflow-hidden rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105">
+                    <img src="https://placehold.co/600x400/EF7E13/FFFFFF?text=Construção+4" alt="" class="w-full h-48 object-cover">
+                </div>
+                <!-- Imagem 5 -->
+                <div class="overflow-hidden rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105">
+                    <img src="https://placehold.co/600x400/0E5847/FFFFFF?text=Paisagem+5" alt="" class="w-full h-48 object-cover">
+                </div>
+                <!-- Imagem 6 -->
+                <div class="overflow-hidden rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105">
+                    <img src="https://placehold.co/600x400/EF7E13/FFFFFF?text=Tecnologia+6" alt="" class="w-full h-48 object-cover">
+                </div>
+            </div>
         </div>
     </section>
 
@@ -584,6 +643,29 @@
         </div>
     </div>
 
+    <!-- Pop-up de Fotos (Carrossel de Imagens) -->
+    <div id="canvaModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="closeCanvaModal">&times;</button>
+            <h3 class="text-2xl font-bold text-galvaoOrange mb-4 text-center">Nossas Fotos</h3>
+            
+            <div class="image-carousel">
+                <img src="https://i.imgur.com/E4Ad3qC.jpg" alt="Drone em voo sobre paisagem" class="carousel-image active">
+                <img src="https://i.imgur.com/rZC6dzi.jpg" alt="Drone em close-up" class="carousel-image">
+                <img src="https://i.imgur.com/Nu63GLC.jpg" alt="Drone sobrevoando plantação" class="carousel-image">
+                <img src="https://i.imgur.com/axyW2VB.jpg" alt="Drone em ação em campo aberto" class="carousel-image">
+                <img src="https://i.imgur.com/nwHFaXb.jpg" alt="Drone com visão panorâmica" class="carousel-image">
+                <img src="https://i.imgur.com/qEojBbI.jpg" alt="Drone em ambiente urbano" class="carousel-image">
+                <img src="https://i.imgur.com/ogfM3nv.jpg" alt="Drone em inspeção de estrutura" class="carousel-image">
+                <img src="https://i.imgur.com/xIpzujo.jpg" alt="Drone em voo noturno" class="carousel-image">
+                <img src="https://i.imgur.com/wIMf8d7.jpg" alt="Drone e operador" class="carousel-image">
+
+                <button class="carousel-button prev" aria-label="Previous image">&#10094;</button>
+                <button class="carousel-button next" aria-label="Next image">&#10095;</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // --- Elementos do Modal de Contato ---
         const openContactModalBtn = document.getElementById('openContactModal');
@@ -627,6 +709,15 @@
         const scheduleNameInput = document.getElementById('scheduleName');
         const scheduleAgeInput = document.getElementById('scheduleAge');
         const scheduleDateInput = document.getElementById('scheduleDate');
+
+        // --- Elementos do Modal de Fotos (Carrossel) ---
+        const openCanvaModalBtn = document.getElementById('openCanvaModal');
+        const canvaModal = document.getElementById('canvaModal');
+        const closeCanvaModalBtn = document.getElementById('closeCanvaModal');
+        const carouselImages = document.querySelectorAll('.carousel-image');
+        const prevButton = document.querySelector('.carousel-button.prev');
+        const nextButton = document.querySelector('.carousel-button.next');
+        let currentImageIndex = 0;
 
 
         // --- Funções para o Modal de Contato ---
@@ -687,6 +778,42 @@
             scheduleForm.reset(); // Limpar o formulário ao fechar
         }
 
+        // --- Funções para o Modal de Fotos (Carrossel) ---
+        function openCanvaModal() {
+            canvaModal.classList.add('active');
+            showImage(currentImageIndex); // Exibe a imagem atual ao abrir o modal
+        }
+        function closeCanvaModal() {
+            canvaModal.classList.remove('active');
+        }
+
+        function showImage(index) {
+            // Esconde todas as imagens
+            carouselImages.forEach((img, i) => {
+                img.classList.remove('active');
+                img.style.display = 'none'; // Garante que a imagem não ocupe espaço
+                img.style.opacity = '0';
+            });
+
+            // Exibe a imagem atual
+            if (carouselImages[index]) {
+                carouselImages[index].style.display = 'block';
+                // Força o reflow para a transição de opacidade funcionar
+                void carouselImages[index].offsetWidth; 
+                carouselImages[index].classList.add('active');
+            }
+        }
+
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % carouselImages.length;
+            showImage(currentImageIndex);
+        }
+
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 1 + carouselImages.length) % carouselImages.length;
+            showImage(currentImageIndex);
+        }
+
 
         // --- Event Listeners para o Modal de Contato ---
         openContactModalBtn.addEventListener('click', openContactModal);
@@ -704,7 +831,8 @@
             const howMet = howMetInput.value.trim();
 
             if (userName === '' || howMet === '') {
-                alert('Por favor, preencha todos os campos.');
+                // Substituído alert() por uma mensagem no console para evitar interrupções no iFrame
+                console.warn('Por favor, preencha todos os campos do formulário de contato.');
                 return;
             }
 
@@ -763,7 +891,8 @@
             const date = scheduleDateInput.value.trim();
 
             if (name === '' || age === '' || date === '') {
-                alert('Por favor, preencha todos os campos para agendar a aula.');
+                // Substituído alert() por uma mensagem no console para evitar interrupções no iFrame
+                console.warn('Por favor, preencha todos os campos para agendar a aula.');
                 return;
             }
 
@@ -775,6 +904,18 @@
 
             closeScheduleModal(); // Fecha o modal após o envio
         });
+
+        // --- Event Listeners para o Modal de Fotos (Carrossel) ---
+        openCanvaModalBtn.addEventListener('click', openCanvaModal);
+        closeCanvaModalBtn.addEventListener('click', closeCanvaModal);
+        canvaModal.addEventListener('click', (event) => {
+            if (event.target === canvaModal) {
+                closeCanvaModal();
+            }
+        });
+
+        prevButton.addEventListener('click', prevImage);
+        nextButton.addEventListener('click', nextImage);
 
 
         // --- Lógica de Compartilhamento e Deep Linking ---
@@ -833,7 +974,8 @@
         askAiButton.addEventListener('click', async () => {
             const question = aiQuestionInput.value.trim();
             if (!question) {
-                alert('Por favor, digite sua pergunta.');
+                // Substituído alert() por uma mensagem no console para evitar interrupções no iFrame
+                console.warn('Por favor, digite sua pergunta para o assistente de IA.');
                 return;
             }
 
@@ -877,3 +1019,4 @@
     </script>
 </body>
 </html>
+
